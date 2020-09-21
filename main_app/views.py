@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Cat
+from .models import Cat, CatToy
 from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
@@ -25,20 +25,26 @@ def cats_show(request, cat_id):
     cat = Cat.objects.get(id=cat_id)
     return render(request, 'cats/show.html', {'cat': cat})
 
+class CatToyCreate(CreateView):
+    model = CatToy
+    fields = '__all__'
+    success_url = '/cattoys'
+
 class CatCreate(CreateView):
     model = Cat
-    fields = '__all__'
+    fields = ['name', 'breed', 'description', 'age', 'cattoys']
     success_url = '/cats'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
+        print('PRINTING SELF.OBJECT', self.object.cattoys)
         return HttpResponseRedirect('/cats')
 
 class CatUpdate(UpdateView):
     model = Cat
-    fields = ['name', 'breed', 'description', 'age']
+    fields = ['name', 'breed', 'description', 'age', 'cattoys']
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -48,3 +54,21 @@ class CatUpdate(UpdateView):
 class CatDelete(DeleteView):
     model = Cat
     success_url = '/cats'
+
+def cattoys_index(request):
+    cattoys = CatToy.objects.all()
+    return render(request, 'cattoys/index.html', {'cattoys': cattoys})
+
+def cattoys_show(request, cattoy_id):
+    cattoy = CatToy.objects.get(id=cattoy_id)
+    return render(request, 'cattoys/show.html', {'cattoy': cattoy})
+
+class CatToyUpdate(UpdateView):
+    model = CatToy
+    fields = ['name', 'color']
+    success_url = '/cattoys'
+
+class CatToyDelete(DeleteView):
+    model = CatToy
+    success_url = '/cattoys'
+

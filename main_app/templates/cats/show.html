@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="card-content">
-  <span class="card-title">{{ cat.name }}</span>
+<div>
+  <span>{{ cat.name }}</span>
   <p>Breed: {{ cat.breed }}</p>
   <p>Description: {{ cat.description }}</p>
   {% if cat.age > 0 %}
@@ -10,6 +10,12 @@
   {% else %}
       <p>Age: Kitten</p>
   {% endif %}
+
+  {% for cattoy in cat.cattoys.all %}
+    <div>{{cattoy.name}}, Color: {{cattoy.color}}</div>
+  {% empty %}
+    <div>Cat Has No Toys :(</div>
+  {% endfor %}
 
   <!-- Add links for update and delete here... -->
   <a href="{% url 'cats_update' cat.id %}">Update Details</a> | 
